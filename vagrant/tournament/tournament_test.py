@@ -6,6 +6,7 @@
 # If you do add any of the extra credit options, be sure to add/modify these test cases
 # as appropriate to account for your module's added functionality.
 
+import pdb
 from tournament import *
 
 def testCount():
@@ -29,7 +30,7 @@ def testCount():
         raise ValueError(
             "After one player registers, countPlayers() should be 1. Got {c}".format(c=c))
     print "2. countPlayers() returns 1 after one player is registered."
-    registerPlayer("Jace Beleren")
+    registerPlayer("Jace Bceleren")
     c = countPlayers()
     if c != 2:
         raise ValueError(
@@ -51,6 +52,7 @@ def testStandingsBeforeMatches():
     deletePlayers()
     registerPlayer("Melpomene Murray")
     registerPlayer("Randy Schwartz")
+    # pdb.set_trace()
     standings = playerStandings()
     if len(standings) < 2:
         raise ValueError("Players should appear in playerStandings even before "

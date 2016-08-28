@@ -1,0 +1,17 @@
+This program allows you to manage your Swiss-system tournament.
+
+Functionality:
+- Create player rosters
+- Store match results
+- Generate Swiss Pairings
+
+Install:
+1. Download and unzip the tournament zip file and take note of the download location
+2. Ensure vagrant is installed on your system and accessible in the directory in which the tournament file is stored
+- follow the instructions at the below link if you are unfamiliar with how to install and use vagrant
+- https://docs.google.com/document/d/16IgOm4XprTaKxAa8w02y028oBECOoB1EI1ReddADEeY/pub?embedded=true
+3. Run vagrant in the file folder and enter the file directory with cd /vagrant
+4. Run Postgre SQL (type `psql` and hit enter) and connect to the tournament
+5. Create the requisite database, tables, and views by installing the tournament.sql file using the command `\i tournament.sql`
+6. Exit PostgreSQL and run the tournament_test.py file from the vagrant host
+7. Enjoy :)
