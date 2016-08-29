@@ -7,7 +7,11 @@
 -- these lines here.
 
 
+DROP DATABASE IF EXISTS tournament;
+
 CREATE DATABASE tournament;
+
+\c tournament;
 
 CREATE TABLE players (
 
@@ -57,16 +61,4 @@ CREATE VIEW playerswinsmatches as (
   LEFT OUTER JOIN playermatchrawlist
   ON players.id = playermatchrawlist.playerid
   GROUP BY players.id ORDER BY wins DESC
-  );
-
-CREATE TABLE swisspairings (
-
--- This table lists the swiss pairings for the next match.
--- This is to be used as a guide to tournament organizers.
--- Results from those matches will be manually entered into the matches table.
-
-  id1 INT REFERENCES players(id),
-  name1 text,
-  id2 INT REFERENCES players(id),
-  name2 text
   );

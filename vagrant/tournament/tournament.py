@@ -5,16 +5,19 @@
 
 import psycopg2
 
+
 def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
-    return psycopg2.connect("dbname=tournament")
+    try:
+        return psycopg2.connect("dbname=tournament")
+    except: # while normally using except without specifying an exception is bad practice, I believe it is acceptable in this narrow case.
+        print("Connection failed")
 
 
 def deleteMatches():
     """Remove all the match records from the database."""
     db = connect()
     c = db.cursor()
-    c.execute("""DELETE FROM swisspairings;""") # swisspairs are cleared as well every time matches are
     c.execute("""DELETE FROM matches;""")
     db.commit()
     db.close()
@@ -36,7 +39,7 @@ def countPlayers():
     c.execute("""SELECT count(*) FROM players;""")
     count = c.fetchone()
     db.close()
-    return count[0] # the number of players is called from the tuple generated with c.fetchone()
+    return count[0]  # the number of players is called from the tuple generated with c.fetchone()
 
 
 def registerPlayer(name):
@@ -50,7 +53,8 @@ def registerPlayer(name):
     """
     db = connect()
     c = db.cursor()
-    c.execute("""INSERT INTO players (name) VALUES (%s)""", (name,)) # I believe this is query parameterization to prevent SQL injection. Please correct me if I am wrong and/or suggest alternative methods.
+    c.execute("""INSERT INTO players (name) VALUES (%s)""", (
+    name,))  # I believe this is query parameterization to prevent SQL injection. Please correct me if I am wrong and/or suggest alternative methods.
     db.commit()
     db.close()
 
@@ -74,6 +78,7 @@ def playerStandings():
     standings = c.fetchall()
     return standings
 
+
 def reportMatch(winner, loser):
     """Records the outcome of a single match between two players.
 
@@ -84,9 +89,11 @@ def reportMatch(winner, loser):
     db = connect()
     c = db.cursor()
     # winner and loser must match primary key for players that have already been registered
-    c.execute("""INSERT INTO matches (winner, loser) VALUES (%s, %s)""", (winner, loser,)) # I believe this is query parameterization to prevent SQL injection. Please correct me if I am wrong and/or suggest alternative methods.
+    c.execute("""INSERT INTO matches (winner, loser) VALUES (%s, %s)""", (winner,
+                                                                          loser,))  # I believe this is query parameterization to prevent SQL injection. Please correct me if I am wrong and/or suggest alternative methods.
     db.commit()
     db.close()
+
 
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
@@ -106,16 +113,10 @@ def swissPairings():
 
     # this swiss pairing algorithm makes use of the ordering of standings by wins, and simply assigns the odd players with the even players subsequent to them in the list
 
-    db = connect()
-    c = db.cursor()
-    c.execute("""DELETE FROM swisspairings;""") # old pairings are deleted and we start fresh each time.
+    pairings = []
     i = 0
     standings = playerStandings()
-    query = """INSERT INTO swisspairings (id1, name1, id2, name2) values (%s, %s, %s, %s)""" # I believe this is query parameterization to prevent SQL injection. Please correct me if I am wrong and/or suggest alternative methods.
     while i < len(standings):
-        c.execute(query, (standings[i][0], standings[i][1], standings[i + 1][0], standings[i + 1][1], ))
-        db.commit()
+        pairings.append((standings[i][0], standings[i][1], standings[i + 1][0], standings[i + 1][1]))
         i += 2
-    c.execute("""SELECT * FROM swisspairings;""")
-    pairings = c.fetchall()
-    return pairings #returns a tuple with the resultant pairings.
+    return pairings  # returns a list with the resultant pairings.
